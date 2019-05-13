@@ -1,10 +1,8 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"log"
-	"os"
-	"strconv"
 	"time"
 )
 
@@ -12,42 +10,23 @@ var dataMB int
 var renewDate int
 var downloadKb int
 var usedDataMB int
-var dontCarePercentage float32
+var dontCarePercentage float64
 
 func init() {
-	cap, err := strconv.ParseInt(os.Getenv("CAP"), 10, 32)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	dataMB = int(cap)
-
-	day, err := strconv.ParseInt(os.Getenv("RENEW"), 10, 32)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	renewDate = int(day)
-
-	download, err := strconv.ParseInt(os.Getenv("DOWNLOAD"), 10, 32)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	downloadKb = int(download)
-
-	used, err := strconv.ParseInt(os.Getenv("USED"), 10, 32)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	usedDataMB = int(used)
-
-	percentage, err := strconv.ParseFloat(os.Getenv("PERCENTAGE"), 32)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-	dontCarePercentage = float32(percentage)
+	//dataMB = 1000000
+	flag.IntVar(&dataMB, "cap", 1000000, "Data cap in MB")
+	//renewDate = 1
+	flag.IntVar(&renewDate, "renew", 1, "Renew date (Default 1st)")
+	//downloadKb = 10000
+	flag.IntVar(&downloadKb, "download", 10000, "Download speed in Kbps")
+	//usedDataMB = 0
+	flag.IntVar(&usedDataMB, "used", 0, "Data used in MB")
+	//dontCarePercentage = 50
+	flag.Float64Var(&dontCarePercentage, "percentage", 50, "Percentage used before we actually care")
 }
 
 func main() {
-	currentPercentageUsed := (float32(usedDataMB) / float32(dataMB)) * 100.0
+	currentPercentageUsed := (float64(usedDataMB) / float64(dataMB)) * 100.0
 	if currentPercentageUsed < dontCarePercentage {
 		fmt.Printf("%d", downloadKb)
 		return
